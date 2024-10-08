@@ -1,6 +1,6 @@
-# Library Management System
+# Library Management API
 
-This project is a simple Library Management System built using PHP and the Slim framework. It provides endpoints for user registration, authentication, and managing authors and books. The system uses JWT (JSON Web Tokens) for authentication and token management.
+This project is a simple Library Management API built using PHP and the Slim framework. It provides endpoints for user registration, authentication, and managing authors and books. The API uses JWT (JSON Web Tokens) for authentication and token management.
 
 ## Features
 
