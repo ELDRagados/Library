@@ -40,7 +40,7 @@ function generateToken($userid) {
         $stmt->bindParam(':userid', $userid);
         $stmt->execute();
     } catch (PDOException $e) {
-        // Handle exception
+
     }
 
     return $token;
@@ -1005,5 +1005,6 @@ $app->delete('/book_author/delete', function (Request $request, Response $respon
     $conn = null;
     return $response;
 });
+
 $app->run();
 ?>
