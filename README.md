@@ -4,9 +4,10 @@ This project is a simple Library Management System built using PHP and the Slim 
 
 ## Features
 
-- User Registration and Authentication
-- Author Management (Register, Show, Delete)
-- Book Management (Register, Update, Delete)
+- User Management (Register, Show, Update, Delete)
+- Author Management (Register, Show, Update, Delete)
+- Book Management (Register, Show, Update, Delete)
+- Books Authors Management (Register, Show, Update, Delete)
 - Token Management (Generate, Validate, Mark as Used)
 
 ## Prerequisites
@@ -107,9 +108,47 @@ This project is a simple Library Management System built using PHP and the Slim 
     }
     ```
 
-### Author Management
+### Show Users
 
-#### Register Author
+- **Endpoint:** `/user/show`
+- **Method:** `GET`
+- **Header:**
+
+    ```json
+    {
+      "Authorization": "Bearer your_token",
+    }
+    ```
+
+### Update Users
+
+- **Endpoint:** `/user/update`
+- **Method:** `PUT`
+- **Header:**
+
+    ```json
+    {
+      "token": "your_token",
+      "userid": "your_userid"
+      "username": "your_new_username",
+      "password": "your_new_password"
+    }
+     ```
+
+### Delete Users
+
+- **Endpoint:** `/user/update`
+- **Method:** `DELETE`
+- **Header:**
+
+    ```json
+    {
+      "token": "your_token",
+      "userid": "your_userid"
+    }
+    ```
+    ### Author Management
+    ### Author Registration
 
 - **Endpoint:** `/author/register`
 - **Method:** `POST`
@@ -117,26 +156,47 @@ This project is a simple Library Management System built using PHP and the Slim 
 
     ```json
     {
-      "token": "your_jwt_token",
+      "token": "your_token",
       "name": "author_name"
     }
     ```
 
-#### Show Authors
+### Show Authors
 
 - **Endpoint:** `/author/show`
 - **Method:** `GET`
-
-#### Delete Author
-
-- **Endpoint:** `/author/delete`
-- **Method:** `DELETE`
-- **Payload:**
+- **Header:**
 
     ```json
     {
-      "token": "your_jwt_token",
-      "authorid": 1
+      "Authorization": "Bearer your_token",
+    }
+    ```
+
+### Update Users
+
+- **Endpoint:** `/author/update`
+- **Method:** `PUT`
+- **Header:**
+
+    ```json
+    {
+      "token": "your_token",
+      "authorid": "author_id"
+      "name": "author_name",
+    }
+     ```
+
+### Delete Authors
+
+- **Endpoint:** `/authors/update`
+- **Method:** `DELETE`
+- **Header:**
+
+    ```json
+    {
+      "token": "your_token",
+      "authorid": "author_id"
     }
     ```
 
@@ -156,6 +216,19 @@ This project is a simple Library Management System built using PHP and the Slim 
     }
     ```
 
+### Show Books
+
+- **Endpoint:** `/book/show`
+- **Method:** `GET`
+- **Header:**
+
+    ```json
+    {
+      "Authorization": "Bearer your_token",
+    }
+    ```
+    
+
 #### Update Book
 
 - **Endpoint:** `/book/update`
@@ -174,6 +247,62 @@ This project is a simple Library Management System built using PHP and the Slim 
 #### Delete Book
 
 - **Endpoint:** `/book/delete`
+- **Method:** `DELETE`
+- **Payload:**
+
+    ```json
+    {
+      "token": "your_jwt_token",
+      "bookid": 1
+    }
+    ```
+### Book Authors Management
+
+#### Register Book Authors
+
+- **Endpoint:** `/book_author/register`
+- **Method:** `POST`
+- **Payload:**
+
+    ```json
+    {
+      "token": "your_jwt_token",
+      "title": "book_title",
+      "authorid": 1
+    }
+    ```
+
+### Show Books Authors
+
+- **Endpoint:** `/book_author/show`
+- **Method:** `GET`
+- **Header:**
+
+    ```json
+    {
+      "Authorization": "Bearer your_token",
+    }
+    ```
+    
+
+#### Update Book Authors
+
+- **Endpoint:** `/book_author/update`
+- **Method:** `PUT`
+- **Payload:**
+
+    ```json
+    {
+      "token": "your_jwt_token",
+      "bookid": 1,
+      "title": "new_book_title",
+      "authorid": 1
+    }
+    ```
+
+#### Delete Book Authors
+
+- **Endpoint:** `/book_author/delete`
 - **Method:** `DELETE`
 - **Payload:**
 
