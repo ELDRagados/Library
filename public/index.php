@@ -12,6 +12,7 @@ $key = 'server_hack';
 
 function generateToken($userid) {
     global $key;
+
     $iat = time();
     $payload = [
         'iss' => 'http://library.org',
@@ -24,7 +25,6 @@ function generateToken($userid) {
     ];
     $token = JWT::encode($payload, $key, 'HS256');
 
-    // Store the token in the database
     $servername = "localhost";
     $username = "root";
     $password = "";
