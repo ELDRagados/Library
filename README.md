@@ -81,8 +81,8 @@ This project is a simple Library Management System built using PHP and the Slim 
     ```
 
 ## Usage
-
-### User Registration
+### User Management
+### Create Users
 
 - **Endpoint:** `/user/register`
 - **Method:** `POST`
@@ -95,7 +95,7 @@ This project is a simple Library Management System built using PHP and the Slim 
     }
     ```
 
-### User Authentication
+### Authenticate Users
 
 - **Endpoint:** `/user/auth`
 - **Method:** `POST`
@@ -147,8 +147,8 @@ This project is a simple Library Management System built using PHP and the Slim 
       "userid": "your_userid"
     }
     ```
-    ### Author Management
-    ### Author Registration
+### Author Management
+### Author Registration
 
 - **Endpoint:** `/author/register`
 - **Method:** `POST`
