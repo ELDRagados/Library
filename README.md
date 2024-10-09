@@ -4,7 +4,7 @@ This project is a simple Library Management API built using PHP and the Slim fra
 
 ## Features
 
-- User Management (Register, Show, Update, Delete)
+- User Management (Register, Authenticate, Show, Update, Delete)
 - Author Management (Register, Show, Update, Delete)
 - Book Management (Register, Show, Update, Delete)
 - Books Authors Management (Register, Show, Update, Delete)
