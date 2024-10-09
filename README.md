@@ -22,7 +22,7 @@ This project is a simple Library Management API built using PHP and the Slim fra
 
     ```bash
     git clone https://github.com/ELDRagados/Library.git
-    cd library-management-system
+    cd library-management-api
     ```
 
 2. Install dependencies:
