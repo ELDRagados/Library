@@ -64,14 +64,12 @@ function validateToken($token) {
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            // Decode the token to get the payload
             $decoded = JWT::decode($token, new Key($key, 'HS256'));
             return $decoded->data->userid;
         } else {
             return false;
         }
     } catch (PDOException $e) {
-        // Handle exception
         return false;
     }
 }
@@ -86,13 +84,11 @@ function markTokenAsUsed($token) {
         $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Mark the token as used and set the used_at timestamp
         $sql = "UPDATE tokens SET status = 'revoked', used_at = NOW() WHERE token = :token";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':token', $token);
         $stmt->execute();
     } catch (PDOException $e) {
-        // Handle exception
     }
 }
 
@@ -106,14 +102,12 @@ function updateTokenStatus($token, $status) {
         $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Update the status of the token
         $sql = "UPDATE tokens SET status = :status WHERE token = :token";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':token', $token);
         $stmt->execute();
     } catch (PDOException $e) {
-        // Handle exception
     }
 }
 
@@ -190,11 +184,9 @@ $app->post('/user/auth', function (Request $request, Response $response, array $
 });
 
 $app->get('/user/show', function (Request $request, Response $response) {
-    // Log all headers for debugging
     $headers = $request->getHeaders();
     error_log("Headers: " . print_r($headers, true));
 
-    // Extract and log the Authorization header
     $authHeader = $request->getHeader('Authorization');
     error_log("Authorization Header: " . print_r($authHeader, true));
     if (empty($authHeader)) {
@@ -205,7 +197,6 @@ $app->get('/user/show', function (Request $request, Response $response) {
     $token = str_replace('Bearer ', '', $authHeader[0]);
     error_log("Token: " . $token);
 
-    // Validate the token
     $userid = validateToken($token);
 
     if (!$userid) {
@@ -227,10 +218,8 @@ $app->get('/user/show', function (Request $request, Response $response) {
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if ($users) {
-            // Mark the token as used
             markTokenAsUsed($token);
 
-            // Generate a new token
             $newToken = generateToken($userid);
 
             return $response->write(json_encode(array("status" => "success", "token" => $newToken, "data" => $users)));
@@ -264,7 +253,6 @@ $app->put('/user/update', function (Request $request, Response $response) {
 
     $useridToUpdate = $data->userid;
 
-    // Check if the user ID from the token matches the user ID being updated
     if ($useridFromToken != $useridToUpdate) {
         return $response->withStatus(403)->write(json_encode(array("status" => "fail", "data" => array("title" => "Unauthorized action"))));
     }
@@ -288,7 +276,6 @@ $app->put('/user/update', function (Request $request, Response $response) {
         $stmt->bindParam(':userid', $useridToUpdate);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
         $newToken = generateToken($useridFromToken);
@@ -326,7 +313,6 @@ $app->delete('/user/delete', function (Request $request, Response $response) {
 
     $useridToDelete = $data->userid;
 
-    // Check if the user ID from the token matches the user ID being deleted
     if ($useridFromToken != $useridToDelete) {
         return $response->withStatus(403)->write(json_encode(array("status" => "fail", "data" => array("title" => "Unauthorized action"))));
     }
@@ -345,7 +331,6 @@ $app->delete('/user/delete', function (Request $request, Response $response) {
         $stmt->bindParam(':userid', $useridToDelete);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
         $response->getBody()->write(json_encode(array("status" => "success", "data" => null)));
@@ -398,10 +383,8 @@ $app->post('/author/register', function (Request $request, Response $response, a
             $stmt->bindParam(':name', $name);
             $stmt->execute();
 
-            // Mark the token as used
             markTokenAsUsed($token);
 
-            // Generate a new token for the user performing the registration
             $newToken = generateToken($useridFromToken);
             $response->getBody()->write(json_encode(array("status" => "success", "token" => $newToken, "data" => null)));
         }
@@ -414,11 +397,10 @@ $app->post('/author/register', function (Request $request, Response $response, a
 });
 
 $app->get('/author/show', function (Request $request, Response $response) {
-    // Log all headers for debugging
+
     $headers = $request->getHeaders();
     error_log("Headers: " . print_r($headers, true));
 
-    // Extract and log the Authorization header
     $authHeader = $request->getHeader('Authorization');
     error_log("Authorization Header: " . print_r($authHeader, true));
     if (empty($authHeader)) {
@@ -429,7 +411,6 @@ $app->get('/author/show', function (Request $request, Response $response) {
     $token = str_replace('Bearer ', '', $authHeader[0]);
     error_log("Token: " . $token);
 
-    // Validate the token
     $userid = validateToken($token);
 
     if (!$userid) {
@@ -451,10 +432,8 @@ $app->get('/author/show', function (Request $request, Response $response) {
         $authors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if ($authors) {
-            // Mark the token as used
             markTokenAsUsed($token);
 
-            // Generate a new token
             $newToken = generateToken($userid);
 
             return $response->write(json_encode(array("status" => "success", "token" => $newToken, "data" => $authors)));
@@ -503,7 +482,6 @@ $app->put('/author/update', function (Request $request, Response $response) {
         $stmt->bindParam(':authorid', $authoridToUpdate);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
         $newToken = generateToken($useridFromToken);
@@ -555,10 +533,8 @@ $app->delete('/author/delete', function (Request $request, Response $response) {
         $stmt->bindParam(':authorid', $authoridToDelete);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
-        // Generate a new token for the user performing the deletion
         $newToken = generateToken($useridFromToken);
 
         $response->getBody()->write(json_encode(array("status" => "success", "token" => $newToken, "data" => null)));
@@ -614,10 +590,8 @@ $app->post('/book/register', function (Request $request, Response $response, arr
             $stmt->bindParam(':authorid', $authorid);
             $stmt->execute();
 
-            // Mark the token as used
             markTokenAsUsed($token);
 
-            // Generate a new token for the user performing the registration
             $newToken = generateToken($useridFromToken);
             $response->getBody()->write(json_encode(array("status" => "success", "token" => $newToken, "data" => null)));
         }
@@ -630,11 +604,9 @@ $app->post('/book/register', function (Request $request, Response $response, arr
 });
 
 $app->get('/book/show', function (Request $request, Response $response) {
-    // Log all headers for debugging
     $headers = $request->getHeaders();
     error_log("Headers: " . print_r($headers, true));
 
-    // Extract and log the Authorization header
     $authHeader = $request->getHeader('Authorization');
     error_log("Authorization Header: " . print_r($authHeader, true));
     if (empty($authHeader)) {
@@ -645,7 +617,6 @@ $app->get('/book/show', function (Request $request, Response $response) {
     $token = str_replace('Bearer ', '', $authHeader[0]);
     error_log("Token: " . $token);
 
-    // Validate the token
     $userid = validateToken($token);
 
     if (!$userid) {
@@ -667,10 +638,8 @@ $app->get('/book/show', function (Request $request, Response $response) {
         $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if ($books) {
-            // Mark the token as used
             markTokenAsUsed($token);
 
-            // Generate a new token
             $newToken = generateToken($userid);
 
             return $response->write(json_encode(array("status" => "success", "token" => $newToken, "data" => $books)));
@@ -721,7 +690,6 @@ $app->put('/book/update', function (Request $request, Response $response) {
         $stmt->bindParam(':bookid', $bookidToUpdate);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
         $newToken = generateToken($useridFromToken);
@@ -773,10 +741,8 @@ $app->delete('/book/delete', function (Request $request, Response $response) {
         $stmt->bindParam(':bookid', $bookidToDelete);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
-        // Generate a new token for the user performing the deletion
         $newToken = generateToken($useridFromToken);
 
         $response->getBody()->write(json_encode(array("status" => "success", "token" => $newToken, "data" => null)));
@@ -832,10 +798,8 @@ $app->post('/book_author/register', function (Request $request, Response $respon
             $stmt->bindParam(':authorid', $authorid);
             $stmt->execute();
 
-            // Mark the token as used
             markTokenAsUsed($token);
 
-            // Generate a new token for the user performing the registration
             $newToken = generateToken($useridFromToken);
             $response->getBody()->write(json_encode(array("status" => "success", "token" => $newToken, "data" => null)));
         }
@@ -848,11 +812,9 @@ $app->post('/book_author/register', function (Request $request, Response $respon
 });
 
 $app->get('/book_author/show', function (Request $request, Response $response) {
-    // Log all headers for debugging
     $headers = $request->getHeaders();
     error_log("Headers: " . print_r($headers, true));
 
-    // Extract and log the Authorization header
     $authHeader = $request->getHeader('Authorization');
     error_log("Authorization Header: " . print_r($authHeader, true));
     if (empty($authHeader)) {
@@ -863,7 +825,6 @@ $app->get('/book_author/show', function (Request $request, Response $response) {
     $token = str_replace('Bearer ', '', $authHeader[0]);
     error_log("Token: " . $token);
 
-    // Validate the token
     $userid = validateToken($token);
 
     if (!$userid) {
@@ -885,10 +846,8 @@ $app->get('/book_author/show', function (Request $request, Response $response) {
         $bookAuthors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if ($bookAuthors) {
-            // Mark the token as used
             markTokenAsUsed($token);
 
-            // Generate a new token
             $newToken = generateToken($userid);
 
             return $response->write(json_encode(array("status" => "success", "token" => $newToken, "data" => $bookAuthors)));
@@ -939,7 +898,6 @@ $app->put('/book_author/update', function (Request $request, Response $response)
         $stmt->bindParam(':collectionid', $collectionidToUpdate);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
         $newToken = generateToken($useridFromToken);
@@ -991,10 +949,8 @@ $app->delete('/book_author/delete', function (Request $request, Response $respon
         $stmt->bindParam(':collectionid', $collectionidToDelete);
         $stmt->execute();
 
-        // Mark the token as used
         markTokenAsUsed($token);
 
-        // Generate a new token for the user performing the deletion
         $newToken = generateToken($useridFromToken);
 
         $response->getBody()->write(json_encode(array("status" => "success", "token" => $newToken, "data" => null)));
